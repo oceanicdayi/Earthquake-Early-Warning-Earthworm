@@ -1,0 +1,74 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.8 2007/03/02 04:28:50 stefan Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.8  2007/03/02 04:28:50  stefan
+#     unshare pick_ew.obj to the lib dir
+#
+#     Revision 1.7  2007/03/02 04:27:19  stefan
+#     share pick_ew.obj to the lib dir
+#
+#     Revision 1.6  2006/11/21 23:04:49  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.5  2006/11/21 22:05:21  stefan
+#     cl to $(cc) $(GLOBALFLAGS)  and include <ntwin32.mak>
+#
+#     Revision 1.4  2006/10/06 20:02:57  stefan
+#     cflags ntwin32.mak
+#
+#     Revision 1.3  2004/04/29 22:44:50  kohler
+#     Pick_ew now produces new TYPE_PICK_SCNL and TYPE_CODA_SCNL messages.
+#     The station list file now contains SCNLs, rather than SCNs.
+#     Input waveform messages may be of either TYPE_TRACEBUF or TYPE_TRACEBUF2.
+#     If the input waveform message is of TYPE_TRACEBUF (without a location code),
+#     the location code is assumed to be "--".  WMK 4/29/04
+#
+#     Revision 1.2  2003/05/06 20:52:48  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/02/14 19:06:49  lucky
+#     Initial revision
+#
+#
+#
+
+#
+#                    Nmake File For pick_ew - Windows NT version
+#
+APP = pick_ew
+O = $(APP).obj pick_ra.obj restart.obj config.obj stalist.obj sniff_eew.obj compare.obj \
+            index.obj sample.obj report.obj initvar.obj scan.obj sign.obj
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+!include <ntwin32.mak>
+
+compflags= /c /W3 /MT /nologo
+
+linkflags= /release /nologo
+
+libs= libcmt.lib
+
+
+$(APP).exe: $O
+   link $(linkflags) $(libs) $O $L\kom.obj $L\getutil.obj \
+    $L\time_ew.obj $L\chron3.obj $L\logit.obj $L\transport.obj \
+    $L\sleep_ew.obj $L\swap.obj $L\trheadconv.obj -out:pick_eew.exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS)  /nologo $(compflags) $(cflags) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~ 
+
+clean_bin:
+	-del $B\pick_ew*

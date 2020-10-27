@@ -1,0 +1,17 @@
+double delaz(double elat,double elon,double slat, double slon)
+{
+  double  delta;
+  double avlat,a,b,dlat,dlon,dx,dy;
+
+  avlat=0.5*(elat+slat);
+  a=1.840708+avlat*(.0015269+avlat*(-.00034+avlat*(1.02337e-6)));
+  b=1.843404+avlat*(-6.93799e-5+avlat*(8.79993e-6+avlat*(-6.47527e-8)));
+  dlat=slat-elat;
+  dlon=slon-elon;
+  dx=a*dlon*60.0;
+  dy=b*dlat*60.0;
+  delta=sqrt(dx*dx+dy*dy);
+
+  return delta;
+}
+

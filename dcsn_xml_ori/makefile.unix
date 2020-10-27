@@ -1,0 +1,57 @@
+#
+#    Makefile for dcsn
+# 
+
+LINUX_FLAGS=-lpthread -fstack-check -Wall 
+SOLARIS_FLAGS=-mt -lposix4 -lthread -lpthread -lsocket -lnsl -lm
+SPECIFIC_FLAGS=$($(PLATFORM)_FLAGS)
+
+LINUX_CFLAGS=-Wall 
+SOLARIS_CFLAGS=
+SPECIFIC_CFLAGS=$($(PLATFORM)_CFLAGS)
+
+CFLAGS = -D_REENTRANT $(GLOBALFLAGS) $(SPECIFIC_CFLAGS)
+
+CFLAGS += -g
+
+MYSQL_CONNECTOR_C_PATH_BUILD = $(EW_HOME)/$(EW_VERSION)/src/archiving/mole/mysql-connector-c-build
+# In case of need, change MYSQL_CONNECTOR_C_PATH_BUILD with the appropriate path to 32bit mysql_config executable
+# MYSQL_CONNECTOR_C_PATH_BUILD = /usr
+# MYSQL_CONNECTOR_C_PATH_BUILD = /opt/local/lib/mysql5
+MYSQL_CONFIG_PROG_PATH = $(MYSQL_CONNECTOR_C_PATH_BUILD)/bin
+MYSQL_CONFIG_PROG = $(MYSQL_CONFIG_PROG_PATH)/mysql_config
+
+CFLAGS += `$(MYSQL_CONFIG_PROG) --cflags`
+
+APP = dcsn
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+BINARIES = dcsn.o $L/logit.o $L/kom.o $L/getutil.o $L/sleep_ew.o \
+           $L/time_ew.o $L/transport.o  $L/lockfile_ew.o $L/lockfile.o\
+
+HEADERS = 
+
+all: dynamic
+
+dynamic: $B/$(APP)
+
+static: $(BINARIES) $(HEADERS)
+	$(CC) -o dcsn $(CFLAGS) $(LDFLAGS) $(BINARIES) $(MYSQL_CONNECTOR_C_PATH_BUILD)/lib/libmysqlclient.a  $(SPECIFIC_FLAGS)
+
+$B/$(APP): $(BINARIES) $(HEADERS)
+	$(CC) -o dcsn $(CFLAGS) $(LDFLAGS) `$(MYSQL_CONFIG_PROG) --libs_r` $(BINARIES) $(SPECIFIC_FLAGS)
+
+.c.o:
+	$(CC) -c $(CFLAGS)  $<
+
+
+lint:
+	lint dcsn.c $(GLOBALFLAGS)
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o
+
+clean_bin:
+	rm -f $B/$(APP)

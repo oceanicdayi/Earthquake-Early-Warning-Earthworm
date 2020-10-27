@@ -1,0 +1,40 @@
+
+#
+#
+#    $Id: makefile.ux,v 1.3 2007/12/16 19:44:56 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.3  2007/12/16 19:44:56  paulf
+#     unix makefile improvements for cflags and cc vars
+#
+#     Revision 1.2  2007/02/20 16:01:07  stefan
+#     lockfile.o
+#
+#     Revision 1.1  2005/07/26 20:58:04  friberg
+#     added UNIX makefile
+#
+#
+
+CFLAGS=${GLOBALFLAGS} -g
+LIBS=-lm -lpthread
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+dcsn = dcsn.o $L/logit.o $L/kom.o $L/getutil.o $L/sleep_ew.o \
+           $L/time_ew.o $L/transport.o  $L/lockfile_ew.o $L/lockfile.o 
+
+dcsn: $(dcsn)
+	$(CC) $(CFLAGS) -o dcsn $(dcsn) $(LIBS)
+
+lint:
+	lint dcsn.c ${GLOBALFLAGS}
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/dcsn*

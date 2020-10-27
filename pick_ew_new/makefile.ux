@@ -1,0 +1,58 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.ux,v 1.4 2007/12/16 14:39:58 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.ux,v $
+#     Revision 1.4  2007/12/16 14:39:58  paulf
+#     improved unix makefiles to use CFLAGS for linking phase
+#
+#     Revision 1.3  2007/12/15 21:28:14  paulf
+#     added GLOBAL flags for linux
+#
+#     Revision 1.2  2005/07/27 18:23:54  friberg
+#     added /trheadconv.o to makefile for SNCL version
+#
+#     Revision 1.1  2005/07/27 18:21:13  friberg
+#     added UNIX makefile
+#
+#     Revision 1.2  2000/08/08 18:11:30  lucky
+#     Added lint directive
+#
+#     Revision 1.1  2000/02/14 19:06:49  lucky
+#     Initial revision
+#
+#
+#
+
+
+CFLAGS= $(GLOBALFLAGS)
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+L = $(EW_HOME)/$(EW_VERSION)/lib
+
+
+O = pick_ew.o pick_ra.o restart.o config.o stalist.o sniff_eew.o compare.o \
+    index.o sample.o report.o initvar.o scan.o sign.o \
+    $L/kom.o $L/getutil.o $L/time_ew.o $L/chron3.o $L/logit.o \
+    $L/transport.o $L/sleep_ew.o $L/swap.o $L/trheadconv.o
+
+pick_ew: $O
+	$(CC) $(CFLAGS) -o pick_eew $O -lm -lpthread
+
+lint:
+	lint pick_ew.c pick_ra.c restart.c config.c stalist.c \
+			compare.c index.c sample.c report.c initvar.c \
+			scan.c sign.c $(GLOBALFLAGS)
+
+
+
+# Clean-up rules
+clean:
+	rm -f a.out core *.o *.obj *% *~
+
+clean_bin:
+	rm -f $B/pick_ew*

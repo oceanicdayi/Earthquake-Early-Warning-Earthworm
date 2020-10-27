@@ -1,0 +1,60 @@
+
+#
+#   THIS FILE IS UNDER RCS - DO NOT MODIFY UNLESS YOU HAVE
+#   CHECKED IT OUT USING THE COMMAND CHECKOUT.
+#
+#    $Id: makefile.nt,v 1.4 2007/02/20 16:19:41 paulf Exp $
+#
+#    Revision history:
+#     $Log: makefile.nt,v $
+#     Revision 1.4  2007/02/20 16:19:41  paulf
+#     lockfile directives added
+#
+#     Revision 1.3  2006/11/21 23:03:59  stefan
+#     GLOBALFLAGS for c compiler from ew_nt.cmd
+#
+#     Revision 1.2  2003/05/06 20:41:48  lucky
+#     *** empty log message ***
+#
+#     Revision 1.1  2000/02/14 19:43:11  lucky
+#     Initial revision
+#
+#
+#
+
+
+#
+#                    Nmake File For dcsn_xml  - Windows NT version
+#
+NODEBUG=1
+
+!include <ntwin32.mak>
+
+APP = dcsn_xml
+O = $(APP).obj 
+
+# Add the proper path for MySQL library
+MYSQLCLIENTLIB = ../mysql-connector-c-build/lib/mysqlclient.lib
+
+B = $(EW_HOME)\$(EW_VERSION)\bin
+L = $(EW_HOME)\$(EW_VERSION)\lib
+
+
+
+$B\$(APP).exe: $O
+    $(link) $(conlflags) $(ldebug) $(conlibsmt) $O $L\kom.obj $L\getutil.obj \
+    $L\time_ew.obj $L\chron3.obj $L\logit.obj $L\transport.obj $L\sleep_ew.obj \
+	$(MYSQLCLIENTLIB) \
+    $L\swap.obj $L\lockfile.obj $L\lockfile_ew.obj \
+	-out:$(APP).exe
+
+.c.obj:
+   $(cc) $(GLOBALFLAGS) /D_CRT_SECURE_NO_DEPRECATE  /nologo $(cflags) $(cdebug) $(cvarsmt) $(tflags) $<
+
+
+# Clean-up directives
+clean:
+	-del a.out core *.o *.obj *% *~
+
+clean_bin:
+	-del $B\dcsn_xml*
